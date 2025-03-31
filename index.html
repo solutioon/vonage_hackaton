@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spy Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background-color: #222;
+            border-radius: 10px;
+        }
+        input {
+            width: 60%;
+            padding: 8px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background-color: orange;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: darkorange;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        img {
+            width: 150px;
+            display: block;
+            margin: 10px auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Spy Dashboard</h1>
+    <img src="espia.png" alt="Spy Logo">
+    <div class="container">
+        <h3>Enter Phone Number</h3>
+        <input type="text" id="phone_number" placeholder="Phone Number">
+        <button onclick="checkSimSwap()">Check SIM Swap</button>
+        <button onclick="verifyLocation()">Verify Location</button>
+        <button onclick="retrieveLastLocation()">Retrieve Last Location</button>
+        <button onclick="verifyNumber()">Verify Agent Number</button>
+        <button onclick="sendMissionAlert()">Send Mission Alert</button>
+        <button onclick="getLogs()">View Logs</button>
+        <div id="result"></div>
+    </div>
+    <script>
+        async function fetchData(endpoint) {
+            let phone_number = document.getElementById('phone_number').value;
+            if (!phone_number) {
+                document.getElementById('result').innerText = "Error: Please enter a phone number.";
+                return;
+            }
+            const response = await fetch(`http://localhost:8000/${endpoint}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone_number })
+            });
+            const data = await response.json();
+            document.getElementById('result').innerText = data.message;
+        }
+        async function getLogs() {
+            const response = await fetch(`http://localhost:8000/logs`);
+            const data = await response.json();
+            document.getElementById('result').innerText = data.logs.join('\n');
+        }
+        function checkSimSwap() { fetchData('check_sim_swap'); }
+        function verifyLocation() { fetchData('verify_location'); }
+        function retrieveLastLocation() { fetchData('retrieve_last_location'); }
+        function verifyNumber() { fetchData('verify_number'); }
+        function sendMissionAlert() { fetchData('send_mission_alert'); }
+    </script>
+</body>
+</html>
+
